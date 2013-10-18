@@ -1,0 +1,14 @@
+- passo 1:
+	Implementar o filtro(receptar e retornar css) 0,5 mes
+
+- passo 2
+	Implementar a engine de sass sem utilizar o filtro(definir 3 ou 4 funcionalidades para implementar) 1 mes
+
+- passo 3
+	Colocar a engine no filtro 0,5 mes
+
+- passo 4
+	Tratar o cache 0,5 mes
+
+- passo 5 
+	Tratar melhorias no sistema.
