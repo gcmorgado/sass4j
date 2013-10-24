@@ -1,0 +1,16 @@
+/* 
+    Document   : teste
+    Created on : 24/10/2013, 20:42:04
+    Author     : gmorgado
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+h1 {
+    font-weight: bold;
+}
+
