@@ -13,18 +13,4 @@
             30
         </session-timeout>
     </session-config>
-    
-    <filter>
-        <filter-name>SassFilter</filter-name>
-        <filter-class>servlet.filter.SassFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>SassFilter</filter-name>
-        <url-pattern>*.css</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>SassFilter</filter-name>
-        <servlet-name>FilterServlet</servlet-name>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
 </web-app>
