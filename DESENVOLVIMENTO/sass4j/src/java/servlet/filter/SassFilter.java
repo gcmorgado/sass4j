@@ -38,7 +38,7 @@ public class SassFilter implements Filter {
             String fileName = httpReq.getRequestURI().substring(httpReq.getRequestURI().lastIndexOf("/"), httpReq.getRequestURI().length());
             if (fileName.toLowerCase().endsWith("css")) { 
                 //httpResp.setContentType("text/css"); 
-                sfh.readFile();
+                
             } 
             //httpResp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\""); 
         } 
