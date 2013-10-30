@@ -35,6 +35,7 @@ public class SassFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response; 
         String path = httpReq.getRequestURI().replace("/sass4j", "");
+        SassFileHandler sfh = new SassFileHandler();
         
         File file = new File(httpReq.getServletContext().getRealPath(path));
         
@@ -44,6 +45,7 @@ public class SassFilter implements Filter {
             InputStream is = new FileInputStream(file);
             OutputStream os = httpResp.getOutputStream();
             httpResp.sendError(404, "File doesn't exists.");
+            sfh.fileHandler(is, os);
         }
         
     }
