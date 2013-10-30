@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -18,37 +19,38 @@ public class SassFileHandler {
         
         OutputStreamWriter osw = new OutputStreamWriter(os);  
         BufferedWriter bw = new BufferedWriter(osw);  
-  
+        HashMap<String, String> lista = new HashMap<String, String>();  
         Scanner input = new Scanner(is); 
         
-        while (input.hasNextLine()) {  
-            input.findInLine("$");
+        while(input.hasNextLine()) {
+            
+            String patternFound = input.findInLine("\\$[^;]*");
+            
+            if(patternFound != null) {
+                String array[] = patternFound.split(":");
+                //lista.put(array[0], array[1]);   
+                System.out.println(patternFound);
+            }
+            
+            System.out.println(lista);
+
             String line = input.nextLine();
-              
-            String newline = line.substring(1, 6);
-            bw.write(newline + ",");  
-  
-              
-            newline = line.substring(6, 15);  
-            bw.write(newline + ",");  
-  
-              
-            newline = line.substring(15, 20);  
-            bw.write(newline + ",");  
-              
             bw.newLine();  
-  
-        }  
-  
+            
+        }
+        
         bw.close();  
         input.close();  
-        
-        
-    }
 
+    }
     
-    
-    
-    
+    public String convertVariables(String input) {
+        
+        String output = "";
+        
+        
+        
+        return output;
+    }
     
 }
