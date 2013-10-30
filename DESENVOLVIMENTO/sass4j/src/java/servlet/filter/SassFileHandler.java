@@ -1,20 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package servlet.filter;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -23,19 +14,15 @@ import java.util.regex.Pattern;
 
 public class SassFileHandler {
     
-    public File readFile(File file) throws IOException {
+    public void fileHandler(InputStream is, OutputStream os) throws IOException {
         
-        InputStream is = new FileInputStream("c:/teste.sass");  
-        OutputStream os = new FileOutputStream("c:/saida.css");  
         OutputStreamWriter osw = new OutputStreamWriter(os);  
         BufferedWriter bw = new BufferedWriter(osw);  
   
         Scanner input = new Scanner(is); 
-        Pattern p = null;
-        p = Pattern.compile("$");
         
         while (input.hasNextLine()) {  
-            input.findInLine(p);
+            input.findInLine("$");
             String line = input.nextLine();
               
             String newline = line.substring(1, 6);
@@ -56,8 +43,6 @@ public class SassFileHandler {
         bw.close();  
         input.close();  
         
-        
-        return file;
         
     }
 
