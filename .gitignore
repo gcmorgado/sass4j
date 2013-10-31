@@ -15,3 +15,5 @@ nb-configuration.xml
 *.jar
 *.war
 *.ear
+# SVN #
+*.svn
