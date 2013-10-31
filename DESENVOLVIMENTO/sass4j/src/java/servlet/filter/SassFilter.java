@@ -36,7 +36,7 @@ public class SassFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response; 
         String path = httpReq.getRequestURI().replace("/sass4j", "");
-        SassFileHandler sfh = new SassFileHandler();
+        
         
         File cssFile = new File(httpReq.getServletContext().getRealPath(path));
         File sassFile = new File(httpReq.getServletContext().getRealPath(path).replace(".css", ".sass"));
@@ -52,6 +52,7 @@ public class SassFilter implements Filter {
             //      Se há o arquivo, verificar se a versão em cache é igual a última versão
             //      Se não é igual, compilar novamente, devolver o arquivo final e cachear novamente o arquivo.
         //} else {
+            SassFileHandler sfh = new SassFileHandler();
             sfh.fileHandler(is, os);
         //}
         //httpResp.sendError(404, "File doesn't exists.");
