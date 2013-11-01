@@ -37,8 +37,7 @@ public class SassFilter implements Filter {
         HttpServletResponse httpResp = (HttpServletResponse) response; 
         String path = httpReq.getRequestURI().replace("/sass4j", "");
         
-        
-        File cssFile = new File(httpReq.getServletContext().getRealPath(path));
+        //File cssFile = new File(httpReq.getServletContext().getRealPath(path));
         File sassFile = new File(httpReq.getServletContext().getRealPath(path).replace(".css", ".sass"));
         
         InputStream is = new FileInputStream(sassFile);
