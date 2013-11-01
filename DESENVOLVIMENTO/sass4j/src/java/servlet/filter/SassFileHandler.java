@@ -25,9 +25,9 @@ public class SassFileHandler {
             while(input.hasNextLine()) {
                 
                 String line = input.nextLine();
-                output.write(convertVariables(line));
+                output.write(convertVariables(line)+"\n");
                 
-            }    
+            }               
             output.flush();
             output.close();
         }
@@ -37,14 +37,13 @@ public class SassFileHandler {
         
         if(line.matches("^\\$[^:]*:[^;]*;")) {
             String patternFound[] = line.split(":");
-            listOfPatterns.put(patternFound[0],patternFound[1].substring(0, patternFound[1].length()-1));           
+            listOfPatterns.put(patternFound[0],patternFound[1].substring(0, patternFound[1].length()-1));
         } else {
             if(line.contains("$")) {
                 String variableFound[] = line.split("\\$");
                 String variableName = listOfPatterns.get("$"+variableFound[1].substring(0,variableFound[1].length()-1));
-                String modifiedLine = variableFound[0].substring(0,variableFound[0].length()-1)+variableName;
+                String modifiedLine = variableFound[0].substring(0,variableFound[0].length()-1)+variableName+";";
                 return modifiedLine;
-                
             } else {
                 return line;
             }
