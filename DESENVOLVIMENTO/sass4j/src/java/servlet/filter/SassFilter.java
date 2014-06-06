@@ -3,13 +3,16 @@ package servlet.filter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,8 +23,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.jruby.embed.ScriptingContainer;
-import org.jruby.javasupport.JavaEmbedUtils.EvalUnit;
+import org.jruby.CompatVersion;
+import org.jruby.RubyInstanceConfig;
 
 /**
  *
@@ -31,17 +34,10 @@ import org.jruby.javasupport.JavaEmbedUtils.EvalUnit;
 @WebFilter(urlPatterns = "*.css", dispatcherTypes = DispatcherType.REQUEST)
 public class SassFilter implements Filter {
     
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    private HashMap<String, String> mapa = new HashMap();
         
-        String rubyFile = this.getClass().getResource("../../gem/teste.rb").getFile();
-        ScriptingContainer container = new ScriptingContainer();
-        try {
-            EvalUnit unit = container.parse(new FileReader(rubyFile), rubyFile);
-        } catch (FileNotFoundException ex) {
-            // Tratar exceção para falha ao achar o arquivo ruby
-            Logger.getLogger(SassFilter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {   
     }
 
     @Override
@@ -50,36 +46,56 @@ public class SassFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
         String sassPath = httpReq.getRequestURI().replace("/sass4j", "");
-
         File cssFile = new File(httpReq.getServletContext().getRealPath(sassPath));
-        File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".sass"));
+        File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".scss"));
+        httpResp.setHeader("Content-Type", "text/css");
+        Scanner scanSass = new Scanner(sassFile, "UTF-8");
+        StringBuilder sass = new StringBuilder();
+        while (scanSass.hasNextLine()) {
+            sass.append(scanSass.nextLine());
+        }
         
         if (sassFile.exists()) {
-            InputStream is = new FileInputStream(sassFile);
-            OutputStream os = httpResp.getOutputStream();
-
             if (cssFile.exists()) {
-                chain.doFilter(request, response);
-                //} else if(sassFile.exists()) {
-                // TODO:
-                // Verificar se há o arquivo em cache
-                //      Se há o arquivo, verificar se a versão em cache é igual a última versão
-                //      Se não é igual, compilar novamente, devolver o arquivo final e cachear novamente o arquivo.
+                chain.doFilter(request, response); 
             } else {
-//                SassFileHandler sfh = new SassFileHandler();
-//                sfh.fileHandler(is, os);
-                Scanner scan = new Scanner(is);
-                StringBuilder sass = new StringBuilder();
-                while (scan.hasNextLine()) {
-                    sass.append(scan.nextLine());
+                OutputStream os = httpResp.getOutputStream();
+                if(!mapa.isEmpty()) {
+                    os.write(mapa.get(cssFile.toString()).getBytes());   
+                    System.out.println("cacheou");
                 }
+                RubyInstanceConfig config = new RubyInstanceConfig();   
+                config.setCompatVersion(CompatVersion.RUBY2_0);
+                String rubyFile = SassFilter.class.getResource("../../sass4j.rb").getFile();
+                String sassScript = SassFilter.class.getResource("../../sass.rb").getFile();
+                ScriptEngineManager manager = new ScriptEngineManager();
+                ScriptEngine engine = manager.getEngineByName("jruby"); 
+                InputStreamReader isr = new InputStreamReader(new FileInputStream(rubyFile), "UTF8");
+                engine.put("sassScript", sassScript);
+                try {
+                    engine.eval(isr);
+                } catch (ScriptException ex) {
+                    throw new RuntimeException(ex);
+                }
+                Invocable inv = (Invocable) engine;
+                //invoca o método do sass4j.rb que acessa a gem completa do sass
+                try {
+                    Object ret = inv.invokeFunction("compile", sass.toString());
+                    byte[] bytes = ret.toString().getBytes();
+                    os.write(bytes);
+                    mapa.put(sassFile.toString(), ret.toString());
+                } catch (ScriptException ex) {
+                    throw new RuntimeException(ex);
+                } catch (NoSuchMethodException ex) {
+                    throw new RuntimeException(ex);
+                }
+                
             }
         }
     }
 
     @Override
     public void destroy() {
-
     }
 
 }
