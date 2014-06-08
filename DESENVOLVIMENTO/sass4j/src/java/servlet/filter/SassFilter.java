@@ -34,8 +34,9 @@ import org.jruby.RubyInstanceConfig;
 @WebFilter(urlPatterns = "*.css", dispatcherTypes = DispatcherType.REQUEST)
 public class SassFilter implements Filter {
     
-    private HashMap<String, String> mapa = new HashMap();
-        
+    private HashMap<String, String> cssMap = new HashMap();
+    private HashMap<String, String> sassMap = new HashMap();
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {   
     }
@@ -60,36 +61,40 @@ public class SassFilter implements Filter {
                 chain.doFilter(request, response); 
             } else {
                 OutputStream os = httpResp.getOutputStream();
-                if(!mapa.isEmpty()) {
-                    os.write(mapa.get(cssFile.toString()).getBytes());   
-                    System.out.println("cacheou");
+                if(!cssMap.isEmpty() && !sassMap.isEmpty()) {
+                    if(sassMap.get(cssFile.toString()).equals(sass.toString())) {
+                        os.write(cssMap.get(cssFile.toString()).getBytes());
+                        System.out.println("cacheou");
+                    }
+                } else {
+                    RubyInstanceConfig config = new RubyInstanceConfig();   
+                    config.setCompatVersion(CompatVersion.RUBY2_0);
+                    String rubyFile = SassFilter.class.getResource("../../sass4j.rb").getFile();
+                    String sassScript = SassFilter.class.getResource("../../sass.rb").getFile();
+                    ScriptEngineManager manager = new ScriptEngineManager();
+                    ScriptEngine engine = manager.getEngineByName("jruby"); 
+                    InputStreamReader isr = new InputStreamReader(new FileInputStream(rubyFile), "UTF8");
+                    engine.put("sassScript", sassScript);
+                    try {
+                        engine.eval(isr);
+                    } catch (ScriptException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    Invocable inv = (Invocable) engine;
+                    //invoca o método do sass4j.rb que acessa a gem completa do sass
+                    try {
+                        Object ret = inv.invokeFunction("compile", sass.toString());
+                        byte[] bytes = ret.toString().getBytes();
+                        os.write(bytes);
+                        cssMap.put(cssFile.toString(), ret.toString());
+                        sassMap.put(cssFile.toString(), sass.toString());
+                    } catch (ScriptException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (NoSuchMethodException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    System.out.println("compilou uma unica vez");
                 }
-                RubyInstanceConfig config = new RubyInstanceConfig();   
-                config.setCompatVersion(CompatVersion.RUBY2_0);
-                String rubyFile = SassFilter.class.getResource("../../sass4j.rb").getFile();
-                String sassScript = SassFilter.class.getResource("../../sass.rb").getFile();
-                ScriptEngineManager manager = new ScriptEngineManager();
-                ScriptEngine engine = manager.getEngineByName("jruby"); 
-                InputStreamReader isr = new InputStreamReader(new FileInputStream(rubyFile), "UTF8");
-                engine.put("sassScript", sassScript);
-                try {
-                    engine.eval(isr);
-                } catch (ScriptException ex) {
-                    throw new RuntimeException(ex);
-                }
-                Invocable inv = (Invocable) engine;
-                //invoca o método do sass4j.rb que acessa a gem completa do sass
-                try {
-                    Object ret = inv.invokeFunction("compile", sass.toString());
-                    byte[] bytes = ret.toString().getBytes();
-                    os.write(bytes);
-                    mapa.put(sassFile.toString(), ret.toString());
-                } catch (ScriptException ex) {
-                    throw new RuntimeException(ex);
-                } catch (NoSuchMethodException ex) {
-                    throw new RuntimeException(ex);
-                }
-                
             }
         }
     }
