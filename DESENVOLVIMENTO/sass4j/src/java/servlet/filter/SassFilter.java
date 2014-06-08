@@ -33,13 +33,13 @@ import org.jruby.RubyInstanceConfig;
 @WebFilter(urlPatterns = "*.css", dispatcherTypes = DispatcherType.REQUEST)
 public class SassFilter implements Filter {
     
-    private HashMap<String, String> cssMap = new HashMap();
-    private HashMap<String, String> sassMap = new HashMap();
+    private final HashMap<String, String> cssMap = new HashMap();
+    private final HashMap<String, String> sassMap = new HashMap();
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {   
     }
-
+    
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException, FileNotFoundException {
         
@@ -50,7 +50,7 @@ public class SassFilter implements Filter {
         File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".scss"));
         httpResp.setHeader("Content-Type", "text/css");
         Scanner scanSass = new Scanner(sassFile, "UTF-8");
-        StringBuilder sass = new StringBuilder();
+        StringBuilder sass = new StringBuilder(); 
         while (scanSass.hasNextLine()) {
             sass.append(scanSass.nextLine());
         }
@@ -84,9 +84,7 @@ public class SassFilter implements Filter {
                         os.write(bytes);
                         cssMap.put(cssFile.toString(), ret.toString());
                         sassMap.put(cssFile.toString(), sass.toString());
-                    } catch (ScriptException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (NoSuchMethodException ex) {
+                    } catch (ScriptException | NoSuchMethodException ex) {
                         throw new RuntimeException(ex);
                     }
                 }
