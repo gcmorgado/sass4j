@@ -55,7 +55,6 @@ public class SassFilter implements Filter {
         while (scanSass.hasNextLine()) {
             sass.append(scanSass.nextLine());
         }
-        
         if (sassFile.exists()) {
             if (cssFile.exists()) {
                 chain.doFilter(request, response); 
@@ -64,7 +63,6 @@ public class SassFilter implements Filter {
                 if(!cssMap.isEmpty() && !sassMap.isEmpty()) {
                     if(sassMap.get(cssFile.toString()).equals(sass.toString())) {
                         os.write(cssMap.get(cssFile.toString()).getBytes());
-                        System.out.println("cacheou");
                     }
                 } else {
                     RubyInstanceConfig config = new RubyInstanceConfig();   
@@ -81,7 +79,6 @@ public class SassFilter implements Filter {
                         throw new RuntimeException(ex);
                     }
                     Invocable inv = (Invocable) engine;
-                    //invoca o método do sass4j.rb que acessa a gem completa do sass
                     try {
                         Object ret = inv.invokeFunction("compile", sass.toString());
                         byte[] bytes = ret.toString().getBytes();
@@ -93,7 +90,6 @@ public class SassFilter implements Filter {
                     } catch (NoSuchMethodException ex) {
                         throw new RuntimeException(ex);
                     }
-                    System.out.println("compilou uma unica vez");
                 }
             }
         }
