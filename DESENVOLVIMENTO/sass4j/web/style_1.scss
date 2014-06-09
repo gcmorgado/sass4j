@@ -1,5 +1,5 @@
-$conteudo: "Ola style_1.scss";
+$conteudo: red;
 
 P {
-    content: $conteudo;
+    color: $conteudo;
 }

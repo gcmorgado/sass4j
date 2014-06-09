@@ -35,6 +35,16 @@ public class SassFilter implements Filter {
     
     private final HashMap<String, String> cssMap = new HashMap();
     private final HashMap<String, String> sassMap = new HashMap();
+    private final RubyInstanceConfig config;
+    private final ScriptEngineManager manager;
+    private final ScriptEngine engine;
+   
+    public SassFilter() {
+        config = new RubyInstanceConfig();   
+        config.setCompatVersion(CompatVersion.RUBY2_0);
+        manager = new ScriptEngineManager();
+        engine = manager.getEngineByName("jruby");                   
+    }
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {   
@@ -62,14 +72,13 @@ public class SassFilter implements Filter {
                 if(!cssMap.isEmpty() && !sassMap.isEmpty()) {
                     if(sassMap.get(cssFile.toString()).equals(sass.toString())) {
                         os.write(cssMap.get(cssFile.toString()).getBytes());
+                        System.out.println("cacheou");
+                        os.flush();
+                        os.close();
                     }
-                } else {
-                    RubyInstanceConfig config = new RubyInstanceConfig();   
-                    config.setCompatVersion(CompatVersion.RUBY2_0);
+                } else {  
                     String rubyFile = SassFilter.class.getResource("../../sass4j.rb").getFile();
                     String sassScript = SassFilter.class.getResource("../../sass.rb").getFile();
-                    ScriptEngineManager manager = new ScriptEngineManager();
-                    ScriptEngine engine = manager.getEngineByName("jruby"); 
                     InputStreamReader isr = new InputStreamReader(new FileInputStream(rubyFile), "UTF8");
                     engine.put("sassScript", sassScript);
                     try {
@@ -82,6 +91,8 @@ public class SassFilter implements Filter {
                         Object ret = inv.invokeFunction("compile", sass.toString());
                         byte[] bytes = ret.toString().getBytes();
                         os.write(bytes);
+                        os.flush();
+                        os.close();
                         cssMap.put(cssFile.toString(), ret.toString());
                         sassMap.put(cssFile.toString(), sass.toString());
                     } catch (ScriptException | NoSuchMethodException ex) {
