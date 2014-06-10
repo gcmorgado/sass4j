@@ -1,13 +1,7 @@
-
-$conteudo: "8px Arial";
-$red: "red";
+$conteudo: 8px Arial;
+$red: red;
 
 P {
     font: $conteudo;
     color: $red;
-	$conteudo: red;
-
-P {
-    color: $conteudo;
-
 }
