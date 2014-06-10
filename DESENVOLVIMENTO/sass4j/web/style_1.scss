@@ -1,5 +1,7 @@
-$conteudo: "Ola style_1.scss";
+$conteudo: "8px Arial";
+$red: "red";
 
 P {
-    content: $conteudo;
+    font: $conteudo;
+    color: $red;
 }
