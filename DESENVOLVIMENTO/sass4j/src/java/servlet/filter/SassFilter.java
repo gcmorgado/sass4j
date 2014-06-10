@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -37,6 +35,7 @@ public class SassFilter implements Filter {
     
     private final HashMap<String, String> cssMap = new HashMap();
     private final HashMap<String, String> sassMap = new HashMap();
+    private final HashMap<String, String[]> map = new HashMap();
     private final RubyInstanceConfig config;
     private final ScriptEngineManager manager;
     private final ScriptEngine engine;
@@ -59,8 +58,36 @@ public class SassFilter implements Filter {
         HttpServletResponse httpResp = (HttpServletResponse) response;
         String sassPath = httpReq.getRequestURI().replace("/sass4j", "");
         File cssFile = new File(httpReq.getServletContext().getRealPath(sassPath));
-        File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".scss"));
-        httpResp.setHeader("Content-Type", "text/css");
+        
+        if(cssFile.exists()) {
+            chain.doFilter(request, response);
+        } else {
+            File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".scss"));
+            if(sassFile.exists()) {
+                Scanner scanSass = new Scanner(sassFile, "UTF-8");
+                StringBuilder sass = new StringBuilder(); 
+                while (scanSass.hasNextLine()) {
+                    sass.append(scanSass.nextLine());
+                }
+                OutputStream os = httpResp.getOutputStream();
+                // TODO SISTEMA DE CACHE
+                if(!cssMap.isEmpty() && !sassMap.isEmpty()) {
+                    if(sassMap.get(cssFile.toString()).equals(sass.toString())) {
+                        os.write(cssMap.get(cssFile.toString()).getBytes());
+                        os.flush();
+                        os.close();
+                    }
+                } else {
+                    
+                }
+            } else {
+                httpResp.sendError(404, "Arquivos SCSS e CSS não foram encontrado.");
+            }
+        }
+        
+        
+        
+        
         Scanner scanSass = new Scanner(sassFile, "UTF-8");
         StringBuilder sass = new StringBuilder(); 
         while (scanSass.hasNextLine()) {
@@ -91,6 +118,7 @@ public class SassFilter implements Filter {
                     try {
                         Object ret = inv.invokeFunction("compile", sass.toString());
                         byte[] bytes = ret.toString().getBytes();
+                        httpResp.setHeader("Content-Type", "text/css");
                         os.write(bytes);
                         os.flush();
                         os.close();
