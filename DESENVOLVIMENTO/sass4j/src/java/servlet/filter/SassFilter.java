@@ -59,16 +59,6 @@ public class SassFilter implements Filter {
         }
     }
     
-    public String compileSass(StringBuilder sass) {
-        
-        try {
-            return engine.invokeFunction("compile", sass.toString()).toString();
-        } catch (ScriptException | NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        }
-        
-    }
-    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {   
     }
@@ -85,22 +75,18 @@ public class SassFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             File sassFile = new File(httpReq.getServletContext().getRealPath(sassPath).replace(".css", ".scss"));
-            if(sassFile.exists()) {
-                OutputStream os = httpResp.getOutputStream();
+            if (sassFile.exists()) {
                 byte[] bytesCss;
-                if(map.get(cssFile.toString())[0].equals(String.valueOf(sassFile.lastModified()))) {
+                if(map.containsKey(cssFile.toString()) && map.get(cssFile.toString())[0].equals(String.valueOf(sassFile.lastModified()))) {
                     bytesCss = map.get(cssFile.toString())[1].getBytes();   
                 } else {
-                    Scanner scanSass = new Scanner(sassFile, "UTF-8");
-                    StringBuilder sass = new StringBuilder(); 
-                    while (scanSass.hasNextLine()) {
-                        sass.append(scanSass.nextLine());
-                    }
+                    StringBuilder sass = appendSass(sassFile);
                     String sassCompilado = compileSass(sass);
                     bytesCss = sassCompilado.getBytes();
                     map.put(cssFile.toString(), new String[]{String.valueOf(sassFile.lastModified()), sassCompilado});
                 }
                 httpResp.setHeader("Content-Type", "text/css");
+                OutputStream os = httpResp.getOutputStream();
                 os.write(bytesCss);
                 os.flush();
                 os.close();
@@ -112,6 +98,30 @@ public class SassFilter implements Filter {
 
     @Override
     public void destroy() {
+    }
+
+    public String compileSass(StringBuilder sass) {
+        
+        try {
+            return engine.invokeFunction("compile", sass.toString()).toString();
+        } catch (ScriptException | NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public StringBuilder appendSass(File sassFile) {
+        
+        Scanner scanSass = null;
+        try {
+            scanSass = new Scanner(sassFile, "UTF-8");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SassFilter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        StringBuilder sass = new StringBuilder(); 
+        while (scanSass.hasNextLine()) {
+            sass.append(scanSass.nextLine());
+        }
+        return sass;
     }
     
 }
