@@ -1,4 +1,4 @@
 sass4j
 ======
 
-A compiler developed in Java EE for the preprocessor Sass.
+A component developed for Java EE using the preprocessor Sass.
