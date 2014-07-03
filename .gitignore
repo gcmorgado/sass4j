@@ -17,3 +17,8 @@ nb-configuration.xml
 *.ear
 # SVN #
 *.svn
+/DESENVOLVIMENTO/sass/nbproject/private/
+/DESENVOLVIMENTO/testesass/nbproject/private/
+/DESENVOLVIMENTO/jee6webfragments/nbproject/private/
+/DESENVOLVIMENTO/sass_fragmento/nbproject/private/
+

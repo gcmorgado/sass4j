@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -45,7 +46,7 @@ public class SassFilter implements Filter {
         config = new RubyInstanceConfig();   
         config.setCompatVersion(CompatVersion.RUBY2_0);
         manager = new ScriptEngineManager();
-        ScriptEngine script = manager.getEngineByName("jruby"); 
+        ScriptEngine script = manager.getEngineByName("jruby");
         engine = (Invocable) script;
         String rubyFile = SassFilter.class.getResource("../../sass4j.rb").getFile();
         String sassScript = SassFilter.class.getResource("../../sass.rb").getFile();

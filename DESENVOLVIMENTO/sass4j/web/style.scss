@@ -1,0 +1,61 @@
+  $fontsize: 13px;
+  $bg: #E8B5B6;
+  $tag: #FFFFFF;
+  $taghover: #F2DFF2;
+  $text: #000000;
+
+  .tag {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    background-color: $bg;
+    position: relative;
+    margin: 0 0 0 0.9em;
+    line-height: 1.17;
+
+    .tag::before {
+      content: '';
+      position: absolute;
+      height: 1.25em;
+      width: 1.25em;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      transform: (rotate(45deg));
+      background: (radial-gradient(circle 1em at 40% 60%, transparent 0.19em, $bg 0.2em, $bg));
+      z-index: -1;
+    }
+  }
+  
+  
+.tag {
+  color: $text;
+  text-decoration: none;
+  margin: 0.5em 0.5em 0.5em 1.4em;
+  .tag::hover {
+    top: -1px; 
+    margin: 0.5em 0.5em 0.5em 1.4em;
+  }
+  .tag::active {
+    top: 1px;
+  }
+}
+
+.big {
+  font-size: 1.5em;
+}
+.giant {
+  font-size: 2.5em;
+}
+body {
+  color: $text;
+  margin: 0;
+  font-family: Droid Sans, sans-serif;
+  font-size: $fontsize;
+  word-spacing: 2px;
+  text-align: center;
+  background: $bg;
+}
+
+#content {
+  margin: 100px auto 0;
+}
