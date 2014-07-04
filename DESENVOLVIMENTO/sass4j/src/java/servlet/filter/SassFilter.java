@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.Invocable;
@@ -36,11 +37,11 @@ import org.jruby.RubyInstanceConfig;
 @WebFilter(urlPatterns = "*.css", dispatcherTypes = DispatcherType.REQUEST)
 public class SassFilter implements Filter {
     
-    private final HashMap<String, String[]> map = new HashMap();
+    private final Map<String, String[]> map = new WeakHashMap();
     private final RubyInstanceConfig config;
     private final ScriptEngineManager manager;
     private final Invocable engine;
-   
+            
     public SassFilter() {
         config = new RubyInstanceConfig();   
         config.setCompatVersion(CompatVersion.RUBY2_0);
