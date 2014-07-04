@@ -1,4 +1,3 @@
-#require_relative "src/java/sass"
 require_relative $sassScript
 
 def compile(sass)

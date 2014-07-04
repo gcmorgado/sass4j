@@ -3,42 +3,53 @@
   $tag: #FFFFFF;
   $taghover: #F2DFF2;
   $text: #000000;
+  $bg-white: white;
+  $dg: 45deg; 
 
-  .tag {
+ .tag {
     display: inline-block;
-    padding: 0.3em 0.6em;
-    background-color: $bg;
+    padding: 0.3em 1.6em;
+    background-color: $bg-white;
     position: relative;
     margin: 0 0 0 0.9em;
     line-height: 1.17;
-
-    .tag::before {
-      content: '';
-      position: absolute;
-      height: 1.25em;
-      width: 1.25em;
-      top: 0;
-      left: 0;
-      transform-origin: top left;
-      transform: (rotate(45deg));
-      background: (radial-gradient(circle 1em at 40% 60%, transparent 0.19em, $bg 0.2em, $bg));
-      z-index: -1;
-    }
-  }
-  
-  
-.tag {
-  color: $text;
-  text-decoration: none;
-  margin: 0.5em 0.5em 0.5em 1.4em;
-  .tag::hover {
-    top: -1px; 
-    margin: 0.5em 0.5em 0.5em 1.4em;
-  }
-  .tag::active {
-    top: 1px;
-  }
+    color: black;
+    text-decoration: none;
+    margin: 0.5em 0.5em 0.5em 1.4em;    
 }
+
+.tag:before:hover{
+    background:$taghover;   
+}
+  
+.tag::before {
+    content: '';
+    position: absolute;
+    height: 1.25em;
+    width: 1.25em;
+    top: 0;
+    left: 0;
+    -webkit-transform-origin: top left;
+    -moz-transform: rotate($dg);
+    -ms-transform: rotate($dg);
+    -webkit-transform: rotate($dg);
+    -webkit-transform: rotate($dg);
+    background: -moz-radial-gradient(circle 1em at 40% 60%, rgba(0, 0, 0, 0) 0.19em, $tag 0.2em, $tag);
+    background: -webkit-radial-gradient(circle 1em at 40% 60%, rgba(0, 0, 0, 0) 0.19em, $tag 0.2em, $tag);
+    background: radial-gradient(circle 1em at 40% 60%, rgba(0, 0, 0, 0) 0.19em, $tag 0.2em, $tag);
+    z-index: -1;
+}
+
+.tag:hover {
+    top: -2px; 
+    margin: 0.5em 0.5em 0.5em 1.4em;
+    background: $taghover;
+}
+  
+.tag:active {
+  top: 1px;
+}
+
 
 .big {
   font-size: 1.5em;
@@ -46,6 +57,7 @@
 .giant {
   font-size: 2.5em;
 }
+
 body {
   color: $text;
   margin: 0;
