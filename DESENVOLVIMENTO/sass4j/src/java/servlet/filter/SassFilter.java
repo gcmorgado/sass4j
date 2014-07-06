@@ -92,7 +92,7 @@ public class SassFilter implements Filter {
                 os.flush();
                 os.close();
             } else {
-                httpResp.sendError(404, "Arquivos SCSS e CSS não foram encontrado.");
+                httpResp.sendError(404, "SCSS and CSS files not founded.");
             }
         }
     }
